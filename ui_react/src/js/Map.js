@@ -62,16 +62,33 @@ const styles = theme => ({
 class Map extends React.Component {
   constructor(props) {
     super(props);
+
+    var route_list = [
+      {
+        name: 'myRoute',
+        waypoints: [
+            [-0.481747846041145, 51.3233379650232],
+            [-0.472757846041245, 51.3233379650232],
+            [-0.463767846041345, 51.3233379650232],
+            [-0.454777846041445, 51.3233379650232]
+          ]
+      },
+      {
+        name: 'myRoute2',
+        waypoints: [
+            [-0.441747846041145, 51.3623379650232],
+            [-0.441747846041145, 51.353379650232],
+            [-0.441747846041145, 51.3123379650232],
+            [-0.441747846041145, 51.3223379650232]
+          ]
+      }
+    ]
+
     this.state = {
       fitBounds: undefined,
       center: [-0.481747846041145, 51.3233379650232],
       zoom: [10],
-      route : [
-        [-0.481747846041145, 51.3233379650232],
-        [-0.472757846041245, 51.3233379650232],
-        [-0.463767846041345, 51.3233379650232],
-        [-0.454777846041445, 51.3233379650232]
-      ],
+      route_list : route_list,
       open: true,
       age: 10
     };
@@ -119,15 +136,19 @@ class Map extends React.Component {
     const { classes } = this.props;
 
     const position = []
-    const { fitBounds, center, zoom, route } = this.state;
+    const { fitBounds, center, zoom, route_list } = this.state;
 
     const lineLayout = {
       'line-cap': 'round',
       'line-join': 'round'
     };
 
-    const linePaint = {
+    const linePaint1 = {
       'line-color': '#4790E5',
+      'line-width': 12
+    };
+    const linePaint2 = {
+      'line-color': '#808000',
       'line-width': 12
     };
 
@@ -145,14 +166,18 @@ class Map extends React.Component {
             <Mapbox
               style="mapbox://styles/mapbox/streets-v9"
               zoom={zoom}
-              center={route[0]}
+              center={route_list[1].waypoints[0]}
               containerStyle={{
                 height: "100%",
                 width: "100%"
               }}>
-                <Layer type="line" layout={lineLayout} paint={linePaint}>
-                <Feature coordinates={route} />
+               <Layer type="line" layout={lineLayout} paint={linePaint1}>
+                <Feature coordinates={route_list[0].waypoints} />
               </Layer>
+              <Layer type="line" layout={lineLayout} paint={linePaint2}>
+               <Feature coordinates={route_list[1].waypoints} />
+             </Layer>
+
             </Mapbox>
 
 
