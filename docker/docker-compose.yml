@@ -17,8 +17,8 @@
 
 version: "3"
 services:
-  unoceros:
-    image: unoceros
+  gpsviewer:
+    image: gpsviewer
     #restart: always
     tty: true
     build:
