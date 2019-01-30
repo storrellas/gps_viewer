@@ -81,11 +81,9 @@ class SideBar extends React.Component {
           </IconButton>
         </div>
         <Divider />
-        
+
         <Divider />
         <List>{mainListItems}</List>
-        <Divider />
-        <List>{secondaryListItems}</List>
       </Drawer>
     );
   }

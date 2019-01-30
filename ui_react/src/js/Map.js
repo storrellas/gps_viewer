@@ -61,7 +61,7 @@ class Map extends React.Component {
         [-0.463767846041345, 51.3233379650232],
         [-0.454777846041445, 51.3233379650232]
       ],
-      open: false
+      open: true
     };
   }
 
