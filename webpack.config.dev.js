@@ -27,12 +27,12 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, "public/"),
     port: 7070,
-    publicPath: "http://localhost:8080/dist/",
+    publicPath: "http://localhost:7070/dist/",
     historyApiFallback: true,
     disableHostCheck: true,
     //hotOnly: true,
-    hot: false,
-    inline: false,
+    //hot: true,
+    //inline: false,
     host: '0.0.0.0',
     watchOptions: {
       poll: 1000

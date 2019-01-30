@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "ui-dev": "webpack-dev-server --mode development --config webpack.config.dev.js --watch",
-    "dev": "webpack --mode production --config webpack.config.prod.js --watch",
+    "dev": "webpack --mode production --config webpack.config.prod.js --watch --info-verbosity verbose",
     "build": "webpack --mode production --config webpack.config.prod.js"
   },
   "author": "",
