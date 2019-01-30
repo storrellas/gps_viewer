@@ -6,6 +6,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 // Map Imports
 import ReactMapboxGl, { Layer, Feature } from "react-mapbox-gl";
@@ -32,20 +35,28 @@ const styles = theme => ({
     overflow: 'auto',
   },
   mapContainer: {
-    display: 'flex',
-    // alignItems: 'center', // Center all elements
-    backgroundColor: 'blue',
-    height: "75vh",
+    display: 'inital',
+    height: "50vh",
     width: "100%",
+  },
+  container: {
+    margin: '2em',
+    display: 'flex',
+    flexFlow: 'row nowrap'
   },
   input: {
     display: 'none',
   },
   button: {
-    backgroundColor: 'red',
     alignSelf:'center',
     flexGrow: 2,
   },
+  rootPadding: {
+    marginLeft: '2em',
+  },
+  selectRoute: {
+    width: '15em',
+  }
 });
 
 class Map extends React.Component {
@@ -61,7 +72,8 @@ class Map extends React.Component {
         [-0.463767846041345, 51.3233379650232],
         [-0.454777846041445, 51.3233379650232]
       ],
-      open: true
+      open: true,
+      age: 10
     };
   }
 
@@ -69,7 +81,7 @@ class Map extends React.Component {
     const file_content = fileReader.result;
   }
 
-  handleInputFile(event){
+  handleInputGPXFile(event){
     let fileReader = new FileReader()
     var obj = this;
     fileReader.onloadend = function(){
@@ -83,6 +95,21 @@ class Map extends React.Component {
     // Read file
     fileReader.readAsText(event.target.files[0])
   }
+
+  handleInputFITFile(event){
+    console.log("Handling FIT File")
+
+  }
+
+  handleClearRoutes(event){
+    console.log("Handling Clear Routes")
+
+  }
+
+  handleChange(event){
+    this.setState({ [event.target.name]: event.target.value });
+  }
+
 
   handleDrawer = (open) => {
     this.setState({ open: open });
@@ -128,16 +155,71 @@ class Map extends React.Component {
               </Layer>
             </Mapbox>
 
-            <input
-              className={classes.input}
-              id="contained-button-file"
-              multiple
-              type="file"
-              onChange={this.handleInputFile.bind(this)}
-            />
-            <Button variant="contained" component="span" className={classes.button}>
-              Upload
-            </Button>
+
+
+            <div className={classes.container}>
+              <div>
+                  <input
+                    className={classes.input}
+                    id="raised-button-file"
+                    multiple
+                    type="file"
+                    onChange={this.handleInputGPXFile.bind(this)}/>
+                   <label htmlFor="raised-button-file">
+                      <Button variant="contained" component="span" className={classes.button}>
+                        Load GPX File
+                      </Button>
+                   </label>
+              </div>
+                 <div>
+                   <input
+                     className={classes.input}
+                     id="raised-button-file"
+                     multiple
+                     type="file"
+                     onChange={this.handleInputFITFile.bind(this)}/>
+                    <label htmlFor="raised-button-file">
+                       <Button variant="contained" component="span" className={[classes.button, classes.rootPadding].join(' ')}>
+                         Load FIT File
+                       </Button>
+                    </label>
+                </div>
+                <div>
+                  <input
+                    className={classes.input}
+                    id="raised-button-file"
+                    multiple
+                    type="file"
+                    onChange={this.handleClearRoutes.bind(this)}/>
+                   <label htmlFor="raised-button-file">
+                      <Button variant="contained" component="span" className={[classes.button, classes.rootPadding].join(' ')}>
+                        Clear Routes
+                      </Button>
+                   </label>
+               </div>
+            </div>
+            <div className={classes.container}>
+              <Typography variant="h6" gutterBottom component="h2">
+                Select Routes
+              </Typography>
+              <Select
+                className={[classes.rootPadding, classes.selectRoute].join(' ')}
+                value={this.state.age}
+                onChange={this.handleChange.bind(this)}
+                inputProps={{
+                  name: 'age',
+                  id: 'age-simple',
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Route1</MenuItem>
+                <MenuItem value={20}>Route1 - Corrected</MenuItem>
+                <MenuItem value={30}>Route2</MenuItem>
+                <MenuItem value={30}>Route2 - Corrected</MenuItem>
+              </Select>
+            </div>
           </div>
         </main>
       </div>

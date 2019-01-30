@@ -111,9 +111,8 @@ class NavBar extends React.Component {
             variant="h6"
             color="inherit"
             noWrap
-            className={classes.title}
-          >
-            Sec2Sky
+            className={classes.title}>
+            GPS Viewer
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
