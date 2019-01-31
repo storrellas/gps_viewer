@@ -67,28 +67,41 @@ class Map extends React.Component {
       {
         name: 'myRoute',
         waypoints: [
-            [-0.481747846041145, 51.3233379650232],
-            [-0.472757846041245, 51.3233379650232],
-            [-0.463767846041345, 51.3233379650232],
-            [-0.454777846041445, 51.3233379650232]
-          ]
+            [2.183699, 41.394960],
+            [2.153699, 41.394960],
+            [2.14699, 41.394960],
+            [2.123699, 41.394960],
+            [2.113699, 41.394960]
+          ],
+        linePaint: {
+          'line-color': '#4790E5',
+          'line-width': 12
+        }
       },
       {
         name: 'myRoute2',
         waypoints: [
-            [-0.441747846041145, 51.3623379650232],
-            [-0.441747846041145, 51.353379650232],
-            [-0.441747846041145, 51.3123379650232],
-            [-0.441747846041145, 51.3223379650232]
-          ]
+            [2.183699, 41.394960],
+            [2.183699, 41.374960],
+            [2.183699, 41.344960],
+            [2.183699, 41.334960],
+            [2.183699, 41.334960]
+          ],
+        linePaint: {
+          'line-color': '#808000',
+          'line-width': 12
+        }
       }
     ]
+
+    //var route_list = []
 
     this.state = {
       fitBounds: undefined,
       center: [-0.481747846041145, 51.3233379650232],
       zoom: [10],
       route_list : route_list,
+      center_default: [2.143699, 41.394960],
       open: true,
       age: 10
     };
@@ -120,6 +133,7 @@ class Map extends React.Component {
 
   handleClearRoutes(event){
     console.log("Handling Clear Routes")
+    this.setState({ route_list: [] });
 
   }
 
@@ -136,7 +150,7 @@ class Map extends React.Component {
     const { classes } = this.props;
 
     const position = []
-    const { fitBounds, center, zoom, route_list } = this.state;
+    const { fitBounds, center, zoom, route_list, center_default } = this.state;
 
     const lineLayout = {
       'line-cap': 'round',
@@ -152,6 +166,13 @@ class Map extends React.Component {
       'line-width': 12
     };
 
+    // Decide center
+    let center_map = center_default
+    if( route_list.length > 0 ){
+      center_map = route_list[0].waypoints[0]
+    }
+
+
     return (
       <div className={classes.root}>
         <CssBaseline />
@@ -166,18 +187,17 @@ class Map extends React.Component {
             <Mapbox
               style="mapbox://styles/mapbox/streets-v9"
               zoom={zoom}
-              center={route_list[1].waypoints[0]}
+              center={center_map}
               containerStyle={{
                 height: "100%",
                 width: "100%"
               }}>
-               <Layer type="line" layout={lineLayout} paint={linePaint1}>
-                <Feature coordinates={route_list[0].waypoints} />
-              </Layer>
-              <Layer type="line" layout={lineLayout} paint={linePaint2}>
-               <Feature coordinates={route_list[1].waypoints} />
-             </Layer>
-
+              {route_list.map(route => (
+                  <Layer key={route.name} type="line" layout={lineLayout} paint={route.linePaint}>
+                   <Feature coordinates={route.waypoints} />
+                 </Layer>
+                  )
+              )}
             </Mapbox>
 
 
@@ -210,17 +230,9 @@ class Map extends React.Component {
                     </label>
                 </div>
                 <div>
-                  <input
-                    className={classes.input}
-                    id="raised-button-file"
-                    multiple
-                    type="file"
-                    onChange={this.handleClearRoutes.bind(this)}/>
-                   <label htmlFor="raised-button-file">
-                      <Button variant="contained" component="span" className={[classes.button, classes.rootPadding].join(' ')}>
-                        Clear Routes
-                      </Button>
-                   </label>
+                  <Button variant="contained" component="span" className={[classes.button, classes.rootPadding].join(' ')} onClick={this.handleClearRoutes.bind(this)}>
+                    Clear Routes
+                  </Button>
                </div>
             </div>
             <div className={classes.container}>
