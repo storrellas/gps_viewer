@@ -101,7 +101,7 @@ class Map extends React.Component {
       route_list : route_list,
       center_default: [2.143699, 41.394960],
       open: true,
-      age: 10
+      route_selected: 'all'
     };
   }
 
@@ -158,12 +158,14 @@ class Map extends React.Component {
 
     // Select routes
     let route_rendered_list = route_list;
-    console.log(this.state)
-    console.log(route_selected)
     if( route_selected == "none" ){
       route_rendered_list = []
     }else{
-      route_rendered_list = route_list
+      for (let route of route_list) {
+        if(route.name == route_selected){
+          route_rendered_list = [route]
+        }
+      }
     }
 
     // Decide center
@@ -241,7 +243,7 @@ class Map extends React.Component {
               </Typography>
               <Select
                 className={[classes.rootPadding, classes.selectRoute].join(' ')}
-                value={this.state.age}
+                value={this.state.route_selected}
                 onChange={this.handleSelectRoute.bind(this)}
                 inputProps={{
                   name: 'route_selected',
