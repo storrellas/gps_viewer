@@ -94,8 +94,6 @@ class Map extends React.Component {
       }
     ]
 
-    //var route_list = []
-
     this.state = {
       fitBounds: undefined,
       center: [-0.481747846041145, 51.3233379650232],
@@ -131,10 +129,12 @@ class Map extends React.Component {
 
   }
 
-  handleClearRoutes(event){
-    console.log("Handling Clear Routes")
+  handleClearRoute(event){
     this.setState({ route_list: [] });
+  }
 
+  handleSelectRoute(event){
+    this.setState({ [event.target.name]: event.target.value });
   }
 
   handleChange(event){
@@ -147,27 +147,27 @@ class Map extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
-
     const position = []
-    const { fitBounds, center, zoom, route_list, center_default } = this.state;
+    const { fitBounds, center, zoom, route_list, center_default, route_selected } = this.state;
+    const { classes } = this.props;
 
     const lineLayout = {
       'line-cap': 'round',
       'line-join': 'round'
     };
 
-    const linePaint1 = {
-      'line-color': '#4790E5',
-      'line-width': 12
-    };
-    const linePaint2 = {
-      'line-color': '#808000',
-      'line-width': 12
-    };
+    // Select routes
+    let route_rendered_list = route_list;
+    console.log(this.state)
+    console.log(route_selected)
+    if( route_selected == "none" ){
+      route_rendered_list = []
+    }else{
+      route_rendered_list = route_list
+    }
 
     // Decide center
-    let center_map = center_default
+    let center_map = center_default;
     if( route_list.length > 0 ){
       center_map = route_list[0].waypoints[0]
     }
@@ -192,7 +192,7 @@ class Map extends React.Component {
                 height: "100%",
                 width: "100%"
               }}>
-              {route_list.map(route => (
+              {route_rendered_list.map(route => (
                   <Layer key={route.name} type="line" layout={lineLayout} paint={route.linePaint}>
                    <Feature coordinates={route.waypoints} />
                  </Layer>
@@ -230,7 +230,7 @@ class Map extends React.Component {
                     </label>
                 </div>
                 <div>
-                  <Button variant="contained" component="span" className={[classes.button, classes.rootPadding].join(' ')} onClick={this.handleClearRoutes.bind(this)}>
+                  <Button variant="contained" component="span" className={[classes.button, classes.rootPadding].join(' ')} onClick={this.handleClearRoute.bind(this)}>
                     Clear Routes
                   </Button>
                </div>
@@ -242,19 +242,19 @@ class Map extends React.Component {
               <Select
                 className={[classes.rootPadding, classes.selectRoute].join(' ')}
                 value={this.state.age}
-                onChange={this.handleChange.bind(this)}
+                onChange={this.handleSelectRoute.bind(this)}
                 inputProps={{
-                  name: 'age',
-                  id: 'age-simple',
+                  name: 'route_selected',
+                  id: 'route_selected_simple',
                 }}
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={10}>Route1</MenuItem>
-                <MenuItem value={20}>Route1 - Corrected</MenuItem>
-                <MenuItem value={30}>Route2</MenuItem>
-                <MenuItem value={30}>Route2 - Corrected</MenuItem>
+                <MenuItem value="none"><em>None</em></MenuItem>
+                {route_list.map(route => (
+                  <MenuItem key={route.name} value={route.name}>{route.name}</MenuItem>
+                  )
+                )}
+                <MenuItem value="all"><em>All</em></MenuItem>
+
               </Select>
             </div>
           </div>
