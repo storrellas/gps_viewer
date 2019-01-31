@@ -10,6 +10,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
+import RandomColor from 'randomcolor';
+
 // Map Imports
 import ReactMapboxGl, { Layer, Feature } from "react-mapbox-gl";
 import GPX from 'gpx-for-runners';
@@ -74,8 +76,8 @@ class Map extends React.Component {
             [2.113699, 41.394960]
           ],
         linePaint: {
-          'line-color': '#4790E5',
-          'line-width': 12
+          'line-color': RandomColor(),
+          'line-width': 5
         }
       },
       {
@@ -88,11 +90,12 @@ class Map extends React.Component {
             [2.183699, 41.334960]
           ],
         linePaint: {
-          'line-color': '#808000',
-          'line-width': 12
+          'line-color': RandomColor(),
+          'line-width': 5
         }
       }
     ]
+
 
     this.state = {
       fitBounds: undefined,
@@ -105,6 +108,10 @@ class Map extends React.Component {
     };
   }
 
+  getTime(){
+    return new Date().toLocaleTimeString().replace("/.*(\d{2}:\d{2}:\d{2}).*/", "$1");
+  }
+
   handleOnReadEnd(){
     const file_content = fileReader.result;
   }
@@ -115,9 +122,22 @@ class Map extends React.Component {
     fileReader.onloadend = function(){
         const file_content = fileReader.result;
         const gpx = new GPX( file_content );
-        obj.setState({
-          route: gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat])
-        });
+
+        console.log(obj.state.route_list)
+        let route_list_local = obj.state.route_list;
+
+        const route = {
+          name: obj.getTime(),
+          waypoints: gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat]),
+          linePaint: {
+            'line-color': RandomColor(),
+            'line-width': 5
+          }
+        }
+        route_list_local.push(route)
+
+        // Add new item
+        obj.setState({ route_list: route_list_local});
     }
 
     // Read file
@@ -170,8 +190,8 @@ class Map extends React.Component {
 
     // Decide center
     let center_map = center_default;
-    if( route_list.length > 0 ){
-      center_map = route_list[0].waypoints[0]
+    if( route_rendered_list.length > 0 ){
+      center_map = route_rendered_list[0].waypoints[0]
     }
 
 
