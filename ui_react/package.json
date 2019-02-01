@@ -31,6 +31,7 @@
     "@material-ui/icons": "^3.0.1",
     "gpx-for-runners": "^1.0.6",
     "mapbox-gl": "^0.52.0",
+    "randomcolor": "^0.5.3",
     "react-mapbox-gl": "^4.0.2",
     "react-router-dom": "^4.3.1",
     "recharts": "^1.4.1"

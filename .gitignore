@@ -1,4 +1,8 @@
 #*dist*
 *lock*
 *node_modules*
+*venv*
+*__py*
+*__init*
+*db.sqlit*
 .env
