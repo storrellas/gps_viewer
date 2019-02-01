@@ -5,5 +5,5 @@ from django.conf.urls import url, include
 from .views import *
 
 urlpatterns = [
-    url(r'^', WaypointCorrectedView.as_view()),
+    url(r'^waypoint', WaypointCorrectedView.as_view()),
 ]
