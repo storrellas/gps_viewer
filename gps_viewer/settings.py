@@ -125,4 +125,3 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "ui_react/dist/")
 ]
-print(STATICFILES_DIRS)
