@@ -68,7 +68,14 @@ class Map extends React.Component {
     var route_list = [
       {
         name: 'myRoute',
-        waypoints: [
+        waypointList: [
+            [2.183699, 41.394960],
+            [2.153699, 41.394960],
+            [2.14699, 41.394960],
+            [2.123699, 41.394960],
+            [2.113699, 41.394960]
+          ],
+        waypointCorrectedList: [
             [2.183699, 41.394960],
             [2.153699, 41.394960],
             [2.14699, 41.394960],
@@ -78,18 +85,33 @@ class Map extends React.Component {
         linePaint: {
           'line-color': RandomColor(),
           'line-width': 5
+        },
+        linePaintCorrected: {
+          'line-color': RandomColor(),
+          'line-width': 5
         }
       },
       {
         name: 'myRoute2',
-        waypoints: [
+         waypointList: [
             [2.183699, 41.394960],
             [2.183699, 41.374960],
             [2.183699, 41.344960],
             [2.183699, 41.334960],
             [2.183699, 41.334960]
           ],
+        waypointCorrectedList: [
+            [2.183699, 41.394960],
+            [2.153699, 41.394960],
+            [2.14699, 41.394960],
+            [2.123699, 41.394960],
+            [2.113699, 41.394960]
+          ],
         linePaint: {
+          'line-color': RandomColor(),
+          'line-width': 5
+        },
+        linePaintCorrected: {
           'line-color': RandomColor(),
           'line-width': 5
         }
@@ -126,10 +148,29 @@ class Map extends React.Component {
         console.log(obj.state.route_list)
         let route_list_local = obj.state.route_list;
 
+        const waypoint_list = gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat])
+
+        const waypoint_corrected_list = []
+        console.log("-- INIT: waypoint --")
+        for (const waypoint of waypoint_list) {
+            const waypoint_corrected = [waypoint[0] - 0.02, waypoint[1]]
+            waypoint_corrected_list.push(waypoint_corrected)
+        }
+
+        console.log(waypoint_list[0])
+        console.log(waypoint_corrected_list[0])
+        console.log("-- END: waypoint --")
+
         const route = {
           name: obj.getTime(),
-          waypoints: gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat]),
+          waypointList: waypoint_list,
           linePaint: {
+            'line-color': RandomColor(),
+            'line-width': 5
+          },
+          nameCorrected: obj.getTime() + " - corrected",
+          waypointCorrectedList: waypoint_corrected_list,
+          linePaintCorrected: {
             'line-color': RandomColor(),
             'line-width': 5
           }
@@ -137,7 +178,10 @@ class Map extends React.Component {
         route_list_local.push(route)
 
         // Add new item
-        obj.setState({ route_list: route_list_local});
+        obj.setState({
+          route_selected: route.name,
+          route_list: route_list_local
+        });
     }
 
     // Read file
@@ -188,12 +232,13 @@ class Map extends React.Component {
       }
     }
 
+    console.log("-- INIT route_rendered_list --")
     // Decide center
     let center_map = center_default;
     if( route_rendered_list.length > 0 ){
-      center_map = route_rendered_list[0].waypoints[0]
+      center_map = route_rendered_list[0].waypointList[0]
     }
-
+    console.log("-- END route_rendered_list --")
 
     return (
       <div className={classes.root}>
@@ -215,10 +260,12 @@ class Map extends React.Component {
                 width: "100%"
               }}>
               {route_rendered_list.map(route => (
-                  <Layer key={route.name} type="line" layout={lineLayout} paint={route.linePaint}>
-                   <Feature coordinates={route.waypoints} />
-                 </Layer>
-                  )
+                <div key={route.name}>
+                  <Layer key={route.name} type="line" layout={lineLayout} paint={route.linePaintCorrected}>
+                    <Feature coordinates={route.waypointList} />
+                  </Layer>
+                </div>
+                )
               )}
             </Mapbox>
 
