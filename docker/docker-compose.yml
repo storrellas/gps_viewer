@@ -17,12 +17,21 @@
 
 version: "3"
 services:
-  gpsviewer:
-    image: gpsviewer
+  gpsviewer_ui:
+    image: gpsviewer_ui
     #restart: always
     tty: true
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/DockerfileUI
     ports:
-      - $PORT:80
+      - $PORT_UI:80
+  gpsviewer_api:
+    image: gpsviewer_api
+    #restart: always
+    tty: true
+    build:
+      context: ..
+      dockerfile: docker/DockerfileAPI
+    ports:
+      - $PORT_API:8080
