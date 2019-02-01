@@ -25,7 +25,7 @@ services:
       context: ..
       dockerfile: docker/DockerfileUI
     ports:
-      - $PORT_UI:80
+      - $UI_PORT:80
   gpsviewer_api:
     image: gpsviewer_api
     #restart: always
@@ -34,4 +34,17 @@ services:
       context: ..
       dockerfile: docker/DockerfileAPI
     ports:
-      - $PORT_API:8080
+      - $API_PORT:8080
+  nginx:
+    image: nginx:1.15
+    links:
+        - gpsviewer_ui:gpsviewer_ui
+        - gpsviewer_api:gpsviewer_api
+    volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./nginx/proxy_params:/etc/nginx/proxy_params
+        - $CERTIFICATE_PATH:/etc/nginx/certificate.pem
+        - $PRIVATE_KEY_PATH:/etc/nginx/privkey.pem
+    ports:
+        - $NGINX_HTTP_PORT:80
+        - $NGINX_HTTPS_PORT:443
