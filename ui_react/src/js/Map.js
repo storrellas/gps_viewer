@@ -172,7 +172,7 @@ class Map extends React.Component {
             },
             body: JSON.stringify({ "waypoint": waypoint_corrected_list })
         }).then(function(response){
-          console.log(response.ok) // Check whether response is ok
+          //console.log(response.ok) // Check whether response is ok
           return response.json();
         })
         .then(function(myJson) {
@@ -215,7 +215,6 @@ class Map extends React.Component {
 
   handleInputFITFile(event){
     console.log("Handling FIT File")
-
   }
 
   handleClearRoute(event){
