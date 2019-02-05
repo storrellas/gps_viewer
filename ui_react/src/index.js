@@ -9,9 +9,9 @@ import { BrowserRouter, Route, Link } from "react-router-dom";
 ReactDOM.render((
   <BrowserRouter>
     <div>
-      <Route path="/ui/" exact component={Login} />
-      <Route path="/ui/map/" component={Map} />
-      <Route path="/ui/chart/" component={Chart} />
+      <Route path="/" exact component={Login} />
+      <Route path="/map/" component={Map} />
+      <Route path="/chart/" component={Chart} />
     </div>
   </BrowserRouter>
 ), document.getElementById('root'))

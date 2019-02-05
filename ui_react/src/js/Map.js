@@ -9,7 +9,6 @@ import Typography from '@material-ui/core/Typography';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-
 import RandomColor from 'randomcolor';
 
 // Map Imports
@@ -137,6 +136,7 @@ class Map extends React.Component {
       open: true,
       route_selected: 'all'
     };
+
   }
 
   getTime(){
@@ -164,31 +164,49 @@ class Map extends React.Component {
             waypoint_corrected_list.push(waypoint_corrected)
         }
 
+        fetch('http://localhost:8080/api/waypoint', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "waypoint": waypoint_corrected_list })
+        }).then(function(response){
+          console.log(response.ok) // Check whether response is ok
+          return response.json();
+        })
+        .then(function(myJson) {
+          //console.log(JSON.stringify(myJson));
 
-        const route = {
-          name: "Route - " + obj.getTime(),
-          waypointList: waypoint_list,
-          linePaint: {
-            'line-color': RandomColor(),
-            'line-width': 5
-          },
-          waypointCorrectedList: waypoint_corrected_list,
-          linePaintCorrected: {
-            'line-color': RandomColor(),
-            'line-width': 5
-          },
-          lineLayout: {
-            'line-cap': 'round',
-            'line-join': 'round'
+          const route = {
+            name: "Route - " + obj.getTime(),
+            waypointList: waypoint_list,
+            linePaint: {
+              'line-color': RandomColor(),
+              'line-width': 5
+            },
+            waypointCorrectedList: waypoint_corrected_list,
+            linePaintCorrected: {
+              'line-color': RandomColor(),
+              'line-width': 5
+            },
+            lineLayout: {
+              'line-cap': 'round',
+              'line-join': 'round'
+            }
           }
-        }
-        route_list_local.push(route)
+          route_list_local.push(route)
 
-        // Add new item
-        obj.setState({
-          route_selected: route.name,
-          route_list: route_list_local
+          // Add new item
+          obj.setState({
+            route_selected: route.name,
+            route_list: route_list_local
+          });
+
         });
+
+
+
     }
 
     // Read file
