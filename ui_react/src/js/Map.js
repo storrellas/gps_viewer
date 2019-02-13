@@ -194,22 +194,21 @@ class Map extends React.Component {
     return this.generateRouteObject(waypoint_list, waypoint_corrected_list)
   }
 
-  generateRoute(waypoint_list){
-/*
+  async generateRoute(waypoint_list){
     const response = await fetch('http://localhost:8080/api/waypoint', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ "waypoint": waypoint_corrected_list })
+        body: JSON.stringify({ "waypoint": waypoint_list })
     })
-    const json = await resonse.json()
+    const data = await response.json()
 
-    console.log( json )
+    const waypoint_corrected_list = data.waypoint_corrected
 
     const route = {
-      name: "Route - " + obj.getTime(),
+      name: "Route - " + this.getTime(),
       waypointList: waypoint_list,
       linePaint: {
         'line-color': RandomColor(),
@@ -225,18 +224,11 @@ class Map extends React.Component {
         'line-join': 'round'
       }
     }
-    route_list_local.push(route)
-
-    // Add new item
-    obj.setState({
-      route_selected: route.name,
-      route_list: route_list_local
-    });
-/**/
+    return route
 
   }
 
-  fileGPXHandler(fileReader){
+  async fileGPXHandler(fileReader){
 
     const file_content = fileReader.result;
     const gpx = new GPX( file_content );
@@ -244,57 +236,18 @@ class Map extends React.Component {
     // Generate Waypoint List
     const waypoint_list = gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat])
 
-    // const route = this.generateRouteFake(waypoint_list)
-    // let route_list_local = this.state.route_list;
-    // route_list_local.push(route)
-    //
-    // // Add new item
-    // this.setState({
-    //   route_selected: route.name,
-    //   route_list: route_list_local
-    // });
-    var obj = this
-    fetch('http://localhost:8080/api/waypoint', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ "waypoint": waypoint_list })
-    }).then(function(response){
-      //console.log(response.ok) // Check whether response is ok
-      return response.json();
-    })
-    .then(function(data) {
-      //console.log(JSON.stringify(data));
-      const waypoint_corrected_list = data.waypoint_corrected
+    // Get Fake Route
+    const route = this.generateRouteFake(waypoint_list)
+    //const route = await this.generateRoute(waypoint_list)
 
-      const route = {
-        name: "Route - " + obj.getTime(),
-        waypointList: waypoint_list,
-        linePaint: {
-          'line-color': RandomColor(),
-          'line-width': 5
-        },
-        waypointCorrectedList: waypoint_corrected_list,
-        linePaintCorrected: {
-          'line-color': RandomColor(),
-          'line-width': 5
-        },
-        lineLayout: {
-          'line-cap': 'round',
-          'line-join': 'round'
-        }
-      }
-      let route_list_local = obj.state.route_list;
-      route_list_local.push(route)
+    // Add new route
+    let route_list_local = this.state.route_list;
+    route_list_local.push(route)
 
-      // Add new item
-      obj.setState({
-        route_selected: route.name,
-        route_list: route_list_local
-      });
-
+    // Add new item
+    this.setState({
+      route_selected: route.name,
+      route_list: route_list_local
     });
 
 
