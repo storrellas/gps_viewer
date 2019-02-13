@@ -10,6 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import RandomColor from 'randomcolor';
+import EasyFit from 'easy-fit';
 
 // Map Imports
 import ReactMapboxGl, { Layer, Feature } from "react-mapbox-gl";
@@ -21,6 +22,17 @@ import SideBar from './SideBar';
 
 const Mapbox = ReactMapboxGl({
   accessToken: "pk.eyJ1Ijoic3RvcnJlbGxhcyIsImEiOiJjaWp6bHQ5Y3kwMDU4dmNtMHgzb2NhNmU5In0.M3jJSPh7KUT0QDSd7Bn3Rg"
+});
+//const EasyFitDefault = EasyFit.default;
+
+// Create a EasyFit instance (options argument is optional)
+const easyFit = new EasyFit({
+  force: true,
+  speedUnit: 'km/h',
+  lengthUnit: 'km',
+  temperatureUnit: 'kelvin',
+  elapsedRecordField: true,
+  mode: 'cascade',
 });
 
 
@@ -147,74 +159,169 @@ class Map extends React.Component {
     const file_content = fileReader.result;
   }
 
-  handleInputGPXFile(event){
-    let fileReader = new FileReader()
-    var obj = this;
-    fileReader.onloadend = function(){
-        const file_content = fileReader.result;
-        const gpx = new GPX( file_content );
+  fetchWaypointCorrected(){
+    console.log("My Test")
+  }
 
-        let route_list_local = obj.state.route_list;
-
-        // Generate Waypoint List
-        const waypoint_list = gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat])
-        const waypoint_corrected_list = []
-        for (const waypoint of waypoint_list) {
-            const waypoint_corrected = [waypoint[0] - 0.02, waypoint[1]]
-            waypoint_corrected_list.push(waypoint_corrected)
-        }
-
-        fetch('http://localhost:8080/api/waypoint', {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ "waypoint": waypoint_corrected_list })
-        }).then(function(response){
-          //console.log(response.ok) // Check whether response is ok
-          return response.json();
-        })
-        .then(function(myJson) {
-          //console.log(JSON.stringify(myJson));
-
-          const route = {
-            name: "Route - " + obj.getTime(),
-            waypointList: waypoint_list,
-            linePaint: {
-              'line-color': RandomColor(),
-              'line-width': 5
-            },
-            waypointCorrectedList: waypoint_corrected_list,
-            linePaintCorrected: {
-              'line-color': RandomColor(),
-              'line-width': 5
-            },
-            lineLayout: {
-              'line-cap': 'round',
-              'line-join': 'round'
-            }
-          }
-          route_list_local.push(route)
-
-          // Add new item
-          obj.setState({
-            route_selected: route.name,
-            route_list: route_list_local
-          });
-
-        });
-
-
-
+  generateRouteObject(waypoint_list, waypoint_corrected_list){
+    return {
+      name: "Route - " + this.getTime(),
+      waypointList: waypoint_list,
+      linePaint: {
+        'line-color': RandomColor(),
+        'line-width': 5
+      },
+      waypointCorrectedList: waypoint_corrected_list,
+      linePaintCorrected: {
+        'line-color': RandomColor(),
+        'line-width': 5
+      },
+      lineLayout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
     }
+  }
 
+  generateRouteFake(waypoint_list){
+
+    // Generate Corrected Waypoint List
+    const waypoint_corrected_list = []
+    for (const waypoint of waypoint_list) {
+        const waypoint_corrected = [waypoint[0] - 0.02, waypoint[1]]
+        waypoint_corrected_list.push(waypoint_corrected)
+    }
+    return this.generateRouteObject(waypoint_list, waypoint_corrected_list)
+  }
+
+  generateRoute(waypoint_list){
+/*
+    const response = await fetch('http://localhost:8080/api/waypoint', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "waypoint": waypoint_corrected_list })
+    })
+    const json = await resonse.json()
+
+    console.log( json )
+
+    const route = {
+      name: "Route - " + obj.getTime(),
+      waypointList: waypoint_list,
+      linePaint: {
+        'line-color': RandomColor(),
+        'line-width': 5
+      },
+      waypointCorrectedList: waypoint_corrected_list,
+      linePaintCorrected: {
+        'line-color': RandomColor(),
+        'line-width': 5
+      },
+      lineLayout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
+    }
+    route_list_local.push(route)
+
+    // Add new item
+    obj.setState({
+      route_selected: route.name,
+      route_list: route_list_local
+    });
+/**/
+
+  }
+
+  fileGPXHandler(fileReader){
+
+    const file_content = fileReader.result;
+    const gpx = new GPX( file_content );
+
+    // Generate Waypoint List
+    const waypoint_list = gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat])
+
+    // const route = this.generateRouteFake(waypoint_list)
+    // let route_list_local = this.state.route_list;
+    // route_list_local.push(route)
+    //
+    // // Add new item
+    // this.setState({
+    //   route_selected: route.name,
+    //   route_list: route_list_local
+    // });
+    var obj = this
+    fetch('http://localhost:8080/api/waypoint', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "waypoint": waypoint_list })
+    }).then(function(response){
+      //console.log(response.ok) // Check whether response is ok
+      return response.json();
+    })
+    .then(function(data) {
+      //console.log(JSON.stringify(data));
+      const waypoint_corrected_list = data.waypoint_corrected
+
+      const route = {
+        name: "Route - " + obj.getTime(),
+        waypointList: waypoint_list,
+        linePaint: {
+          'line-color': RandomColor(),
+          'line-width': 5
+        },
+        waypointCorrectedList: waypoint_corrected_list,
+        linePaintCorrected: {
+          'line-color': RandomColor(),
+          'line-width': 5
+        },
+        lineLayout: {
+          'line-cap': 'round',
+          'line-join': 'round'
+        }
+      }
+      let route_list_local = obj.state.route_list;
+      route_list_local.push(route)
+
+      // Add new item
+      obj.setState({
+        route_selected: route.name,
+        route_list: route_list_local
+      });
+
+    });
+
+
+  }
+
+  handleInputGPXFile(event){
+    var obj = this;
+    let fileReader = new FileReader()
+    fileReader.onloadend = this.fileGPXHandler.bind(this, fileReader)
     // Read file
     fileReader.readAsText(event.target.files[0])
   }
 
   handleInputFITFile(event){
     console.log("Handling FIT File")
+    this.fetchWaypointCorrected()
+/*
+    let fileReader = new FileReader()
+    var obj = this;
+    fileReader.onloadend = function(){
+        console.log("File read successfully")
+
+    }
+
+    // Read file
+    fileReader.readAsText(event.target.files[0])
+/**/
   }
 
   handleClearRoute(event){
@@ -297,11 +404,11 @@ class Map extends React.Component {
               <div>
                   <input
                     className={classes.input}
-                    id="raised-button-file"
+                    id="gpx-button-file"
                     multiple
                     type="file"
                     onChange={this.handleInputGPXFile.bind(this)}/>
-                   <label htmlFor="raised-button-file">
+                   <label htmlFor="gpx-button-file">
                       <Button variant="contained" component="span" className={classes.button}>
                         Load GPX File
                       </Button>
@@ -310,11 +417,11 @@ class Map extends React.Component {
                  <div>
                    <input
                      className={classes.input}
-                     id="raised-button-file"
+                     id="fit-button-file"
                      multiple
                      type="file"
                      onChange={this.handleInputFITFile.bind(this)}/>
-                    <label htmlFor="raised-button-file">
+                    <label htmlFor="fit-button-file">
                        <Button variant="contained" component="span" className={[classes.button, classes.rootPadding].join(' ')}>
                          Load FIT File
                        </Button>

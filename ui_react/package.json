@@ -29,6 +29,7 @@
   "dependencies": {
     "@material-ui/core": "^3.6.2",
     "@material-ui/icons": "^3.0.1",
+    "easy-fit": "0.0.8",
     "gpx-for-runners": "^1.0.6",
     "mapbox-gl": "^0.52.0",
     "randomcolor": "^0.5.3",
