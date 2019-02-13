@@ -236,7 +236,7 @@ class Map extends React.Component {
     // Generate Waypoint List
     const waypoint_list = gpx.trackpoints.map( trackpoint => [trackpoint.lon, trackpoint.lat])
 
-    // Get Fake Route
+    // Get Route
     const route = this.generateRouteFake(waypoint_list)
     //const route = await this.generateRoute(waypoint_list)
 
@@ -253,8 +253,57 @@ class Map extends React.Component {
 
   }
 
+  async fileFITHandler(fileReader){
+
+    const file_content = fileReader.result;
+    const waypoint_list = await new Promise(function(resolve, reject){
+
+      // Parse your file
+      easyFit.parse(file_content, function (error, data) {
+
+        // Handle result of parse method
+        if (error) {
+          console.log(error);
+          return reject()
+        }
+
+        // Generate waypoint list local
+        const waypoint_list_local = []
+        // INIT: Iterate sessions
+        for (const session of data.activity.sessions) {
+          // INIT: Iterate laps
+          for (const lap of session.laps) {
+            // INIT: Iterate records
+            for (const record of lap.records) {
+              waypoint_list_local.push([record.position_lat, record.position_long])
+            } // END: Iterate records
+          } // END: Iterate laps
+        } // END: Iterate sessions
+
+        console.log( waypoint_list_local )
+        return resolve(waypoint_list_local)
+        console.log("This is not resolved")
+
+      })
+    })
+
+    // Generate Route
+    const route = this.generateRouteFake(waypoint_list)
+    //const route = await this.generateRoute(waypoint_list)
+    
+    // Add new route
+    let route_list_local = this.state.route_list;
+    route_list_local.push(route)
+
+    // Add new item
+    this.setState({
+      route_selected: route.name,
+      route_list: route_list_local
+    });
+
+  }
+
   handleInputGPXFile(event){
-    var obj = this;
     let fileReader = new FileReader()
     fileReader.onloadend = this.fileGPXHandler.bind(this, fileReader)
     // Read file
@@ -262,19 +311,10 @@ class Map extends React.Component {
   }
 
   handleInputFITFile(event){
-    console.log("Handling FIT File")
-    this.fetchWaypointCorrected()
-/*
     let fileReader = new FileReader()
-    var obj = this;
-    fileReader.onloadend = function(){
-        console.log("File read successfully")
-
-    }
-
+    fileReader.onloadend = this.fileFITHandler.bind(this, fileReader)
     // Read file
-    fileReader.readAsText(event.target.files[0])
-/**/
+    fileReader.readAsArrayBuffer(event.target.files[0])
   }
 
   handleClearRoute(event){
